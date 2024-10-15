@@ -48,7 +48,7 @@ A Flutter-based chat application that allows users to interact with AI language 
    flutter run
    ```
 
-#Usage
+## Usage
 - **Launch the App**:Start the application on your emulator or physical device.
 - **Enter Ollama URL**:On the home screen, input the URL of your Ollama server (e.g., http://example.com:11434).
 - **Select Model**:Choose the desired AI model from the dropdown menu.
