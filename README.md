@@ -31,22 +31,22 @@ A Flutter-based chat application that allows users to interact with AI language 
 1. **Clone the repository**
    ```bash
    git clone https://github.com/yourusername/ollama_chat_app.git
-    ```
+   ```
 
 2. **Navigate to the project directory**
    ```bash
    flutter pub get
-    ```
+   ```
 
 3. **Install dependencies**
-  ```bash
-  flutter pub get
-  ```
+   ```bash
+   flutter pub get
+   ```
 
 4. **flutter run**
-  ```bash
-  flutter run
-  ```
+   ```bash
+   flutter run
+   ```
 
 #Usage
 - **Launch the App**:Start the application on your emulator or physical device.
