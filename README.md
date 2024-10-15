@@ -57,5 +57,5 @@ A Flutter-based chat application that allows users to interact with AI language 
 - **Receive Responses**:The AI assistant will reply in real-time.button.
 - **Start New Chat**:Use the refresh icon in the chat screen's app bar to start a new chat session.
 
-#License
+## License
 This project is licensed under the MIT License.
