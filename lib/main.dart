@@ -13,8 +13,29 @@ class OllamaChatApp extends StatelessWidget {
     return MaterialApp(
       title: 'Ollama Chat App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        brightness: Brightness.dark,
+        primaryColor: Colors.cyanAccent,
+        fontFamily: 'Orbitron',
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(color: Colors.cyanAccent),
+          bodyMedium: TextStyle(color: Colors.cyanAccent),
+        ),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.cyanAccent,
+          brightness: Brightness.dark,
+          primary: Colors.cyanAccent,
+          secondary: Colors.pinkAccent,
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.cyanAccent),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.pinkAccent),
+          ),
+          labelStyle: TextStyle(color: Colors.cyanAccent),
+          hintStyle: TextStyle(color: Colors.grey),
+        ),
       ),
       home: NewChatScreen(),
     );
@@ -24,20 +45,20 @@ class OllamaChatApp extends StatelessWidget {
 class Message {
   String text;
   final String sender;
-  final String role; // 添加角色属性，用于请求
+  final String role;
 
   Message({required this.text, required this.sender, required this.role});
 }
 
-// 新增的 NewChatScreen，用于输入 URL 和选择模型名称
 class NewChatScreen extends StatefulWidget {
   @override
   _NewChatScreenState createState() => _NewChatScreenState();
 }
 
 class _NewChatScreenState extends State<NewChatScreen> {
-  final TextEditingController _urlController = TextEditingController(text: "http://sanyouhe.cloud:11434");
-  String _selectedModel = 'qwen2.5:7b'; // 默认模型
+  final TextEditingController _urlController =
+      TextEditingController(text: "http://sanyouhe.cloud:11434");
+  String _selectedModel = 'qwen2.5:7b';
   List<String> _models = [
     'qwen2.5:7b',
     'qwen2.5:3b',
@@ -47,7 +68,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
     String url = _urlController.text.trim();
     if (url.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('请输入 Ollama 的 URL')),
+        SnackBar(content: Text('Please enter Ollama s URL')),
       );
       return;
     }
@@ -68,45 +89,72 @@ class _NewChatScreenState extends State<NewChatScreen> {
     super.dispose();
   }
 
+  Widget _buildTextField(
+      {required TextEditingController controller,
+      required String label,
+      required String hint}) {
+    return TextField(
+      controller: controller,
+      style: TextStyle(color: Colors.cyanAccent),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+      ),
+    );
+  }
+
+  Widget _buildDropdown() {
+    return DropdownButtonFormField<String>(
+      dropdownColor: Colors.black,
+      value: _selectedModel,
+      items: _models.map((model) {
+        return DropdownMenuItem(
+          value: model,
+          child: Text(
+            model,
+            style: TextStyle(color: Colors.cyanAccent),
+          ),
+        );
+      }).toList(),
+      onChanged: (value) {
+        setState(() {
+          _selectedModel = value!;
+        });
+      },
+      decoration: InputDecoration(
+        labelText: 'Select Model',
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black, // 设置背景为黑色
       appBar: AppBar(
-        title: Text('新的聊天'),
+        title: Text('New Chat'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
+            _buildTextField(
               controller: _urlController,
-              decoration: InputDecoration(
-                labelText: 'Ollama URL',
-                hintText: '例如：http://sanyouhe.cloud:11434',
-              ),
+              label: 'Ollama URL',
+              hint: 'http://sanyouhe.cloud:11434',
             ),
             SizedBox(height: 20),
-            DropdownButtonFormField<String>(
-              value: _selectedModel,
-              items: _models.map((model) {
-                return DropdownMenuItem(
-                  value: model,
-                  child: Text(model),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedModel = value!;
-                });
-              },
-              decoration: InputDecoration(
-                labelText: '选择模型',
-              ),
-            ),
+            _buildDropdown(),
             SizedBox(height: 40),
             ElevatedButton(
               onPressed: _startChat,
-              child: Text('开始聊天'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.pinkAccent,
+                foregroundColor: Colors.black,
+              ),
+              child: Text('Start Chat'),
             ),
           ],
         ),
@@ -135,8 +183,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _controller.clear();
 
     setState(() {
-      // 添加用户消息到列表
-      _messages.insert(0, Message(text: text, sender: '你', role: 'user'));
+      _messages.insert(0, Message(text: text, sender: 'you', role: 'user'));
       _isLoading = true;
     });
 
@@ -145,46 +192,41 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _getBotResponse() async {
     try {
-      // 构建请求中的 messages 列表，包括历史记录
       List<Map<String, String>> messages = _messages
           .map((message) => {'role': message.role, 'content': message.text})
           .toList()
           .reversed
-          .toList(); // 需要反转列表，因为我们是从最新的消息开始存储的
+          .toList();
 
-      // 构建请求体
       var requestBody = jsonEncode({
         "model": widget.modelName,
         "messages": messages,
       });
 
-      // 打印请求信息
-      print("发送请求到：${widget.ollamaUrl}/api/chat");
-      print("请求体：$requestBody");
+      print("Send：${widget.ollamaUrl}/api/chat");
+      print("Send：$requestBody");
 
       var client = http.Client();
-      var request = http.Request('POST', Uri.parse('${widget.ollamaUrl}/api/chat'));
+      var request =
+          http.Request('POST', Uri.parse('${widget.ollamaUrl}/api/chat'));
       request.headers['Content-Type'] = 'application/json';
       request.body = requestBody;
 
       var response = await client.send(request);
 
-      // 检查响应状态码
       if (response.statusCode == 200) {
-        // 流式读取响应
         var decodedResponse = utf8.decoder.bind(response.stream);
         String assistantContent = '';
 
-        // 初始化机器人的消息
         setState(() {
-          _messages.insert(0, Message(text: '', sender: '机器人', role: 'assistant'));
+          _messages.insert(
+              0, Message(text: '', sender: 'Ollama', role: 'assistant'));
         });
 
         await for (var chunk in decodedResponse.transform(const LineSplitter())) {
           print("Received chunk: $chunk");
           var data = jsonDecode(chunk);
 
-          // 检查是否有 message 字段
           if (data.containsKey('message')) {
             String content = data['message']['content'];
             assistantContent += content;
@@ -193,7 +235,6 @@ class _ChatScreenState extends State<ChatScreen> {
             });
           }
 
-          // 如果有 done 字段且为 true，表示响应结束
           if (data.containsKey('done') && data['done'] == true) {
             setState(() {
               _isLoading = false;
@@ -202,19 +243,27 @@ class _ChatScreenState extends State<ChatScreen> {
           }
         }
 
-        client.close(); // 关闭客户端
+        client.close();
       } else {
         setState(() {
-          _messages.insert(0, Message(text: "机器人回复出错了，请稍后再试。", sender: '机器人', role: 'assistant'));
+          _messages.insert(
+              0,
+              Message(
+                  text: "The ollama replied incorrectly, please try again later.",
+                  sender: 'ollama',
+                  role: 'assistant'));
           _isLoading = false;
         });
-        client.close(); // 关闭客户端
+        client.close();
       }
     } catch (e) {
-      // 打印异常信息
-      print("请求发生异常：$e");
+      print("error$e");
       setState(() {
-        _messages.insert(0, Message(text: "请求失败，请检查网络连接。", sender: '机器人', role: 'assistant'));
+        _messages.insert(
+            0,
+            Message(
+                text: "Request failed, please check network connection.", 
+                sender: 'ollama', role: 'assistant'));
         _isLoading = false;
       });
     }
@@ -231,15 +280,28 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Text(
               message.sender,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.pinkAccent,
+              ),
             ),
             Container(
               decoration: BoxDecoration(
-                color: isMe ? Colors.blue[100] : Colors.grey[300],
+                color: isMe
+                    ? Colors.pinkAccent.withOpacity(0.2)
+                    : Colors.cyanAccent.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isMe ? Colors.pinkAccent : Colors.cyanAccent,
+                ),
               ),
               padding: EdgeInsets.all(10),
-              child: Text(message.text),
+              child: Text(
+                message.text,
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
             ),
           ],
         ),
@@ -257,7 +319,9 @@ class _ChatScreenState extends State<ChatScreen> {
     return _isLoading
         ? Padding(
             padding: EdgeInsets.symmetric(vertical: 10),
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.pinkAccent),
+            ),
           )
         : SizedBox.shrink();
   }
@@ -265,13 +329,15 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black, // 设置背景为黑色
       appBar: AppBar(
-        title: Text('聊天'),
+        title: Text('Chat with Ollama'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: Icon(Icons.refresh, color: Colors.cyanAccent),
             onPressed: () {
-              // 返回到新的聊天界面
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => NewChatScreen()),
@@ -290,29 +356,32 @@ class _ChatScreenState extends State<ChatScreen> {
               itemCount: _messages.length,
               itemBuilder: (context, index) {
                 Message message = _messages[index];
-                bool isMe = message.sender == '你';
+                bool isMe = message.sender == 'you';
                 return _buildMessage(message, isMe);
               },
             ),
           ),
-          //_buildLoadingIndicator(),
-          Divider(height: 1),
+          _buildLoadingIndicator(),
+          Divider(height: 1, color: Colors.cyanAccent),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8),
-            color: Theme.of(context).cardColor,
+            color: Colors.black,
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _controller,
+                    style: TextStyle(color: Colors.cyanAccent),
                     onSubmitted: _sendMessage,
-                    decoration: InputDecoration.collapsed(
-                      hintText: '发送消息',
+                    decoration: InputDecoration(
+                      hintText: 'Send a message...',
+                      hintStyle: TextStyle(color: Colors.grey),
+                      border: InputBorder.none,
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send),
+                  icon: Icon(Icons.send, color: Colors.pinkAccent),
                   onPressed: () => _sendMessage(_controller.text),
                 ),
               ],

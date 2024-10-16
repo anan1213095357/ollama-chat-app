@@ -32,7 +32,7 @@ dependencies:
     sdk: flutter
   http: ^0.13.3
   provider: ^5.0.0  # 正确的包名
-
+  flutter_launcher_icons: ^0.9.2
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -89,3 +89,14 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+fonts:
+  - family: Orbitron
+    fonts:
+      - asset: fonts/Orbitron-Regular.ttf
+
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"
