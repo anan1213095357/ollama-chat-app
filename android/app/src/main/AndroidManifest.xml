@@ -1,9 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:label="ollama_chat_app"
         android:name="${applicationName}" 
-        android:networkSecurityConfig="@xml/network_security_config"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
@@ -32,4 +31,29 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+       <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- check if url is valid -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="http"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
+        <!-- check if url is valid end -->
+        <!-- voice mode -->
+        <intent>
+            <action android:name="android.speech.RecognitionService"/>
+        </intent>
+        <intent>  
+            <action android:name="android.intent.action.TTS_SERVICE"/>
+        </intent>
+        <!-- voice mode end-->
+    </queries>
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
