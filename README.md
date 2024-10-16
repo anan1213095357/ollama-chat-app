@@ -12,10 +12,15 @@ A Flutter-based chat application that allows users to interact with AI language 
 
 ## Screenshots
 
-![Home Screen](https://github.com/user-attachments/assets/45874695-f7f9-449f-b662-5c9fe19bff6d)
+![Home Screen](https://github.com/user-attachments/assets/232aaa91-52ae-4a02-9e99-6cd4b96b8824)
+![Home Screen](https://github.com/user-attachments/assets/878e5070-bc4d-4ec0-b097-6e8a5a64bb52)
+
 *The home screen where you can input the Ollama URL and select a model.*
 
-![Chat Screen](https://github.com/user-attachments/assets/3b00fa67-da35-4415-89de-bc15b27e384e)
+![Chat Screen](https://github.com/user-attachments/assets/b41bbe7f-90b1-423b-8323-be502f2c7386)
+![Chat Screen](https://github.com/user-attachments/assets/183e1ae3-4d14-4da6-8e37-9cd64614375e)
+
+
 *The chat interface for interacting with the AI assistant.*
 
 
